@@ -2,6 +2,7 @@
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Business.Concrete
 
         public void Add(Car car)
         {
-            if ((int)car.Description.Length > 2 && int.Parse(car.DailyPrice) > 0)
+            if ((int)car.Description.Length > 2 && (int)car.DailyPrice > 0)
             {
                 _CarDal.Add(car);
             }
@@ -51,14 +52,11 @@ namespace Business.Concrete
             return _CarDal.GetAll(p => p.ColorId == id);
         }
 
-        public List<Car> GetCarDetails()
+        public List<CarDetailsDto> GetCarDetails()
         {
-            return _CarDal.GetAll();
+            return _CarDal.GetCarDetails();
         }
 
-        public void Update(Car car)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
