@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
@@ -13,48 +15,57 @@ namespace Business.Concrete
 {
     public class CarManager : ICarService
     {
-        ICarDal _CarDal;
+        ICarDal _carDal;
 
         public CarManager(ICarDal carDal)
         {
-            _CarDal = carDal;
+            _carDal = carDal;
         }
 
-        public void Add(Car car)
+        public IResult Add(Car car)
         {
             if ((int)car.Description.Length > 2 && (int)car.DailyPrice > 0)
             {
-                _CarDal.Add(car);
+                _carDal.Add(car);
+                return new SuccessResult(Messages.CarAdded);
             }
             else
             {
-                Console.WriteLine("Araç bilgileri hatalı.");
+                return  new ErrorResult(Messages.BrandNameInvalid);
             }
         }
 
         public void Delete(Car car)
         {
-            _CarDal.Delete(car);
+            _carDal.Delete(car);
         }
 
-        public List<Car> GetAll()
+        public IDataResult<List<Car>> GetAll()
         {
-            return _CarDal.GetAll();
+            if(DateTime.Now.Hour == 13)
+            {
+                return new ErrorDataResult<List<Car>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<Car>>( _carDal.GetAll(),Messages.CarListed);
         }
 
-        public List<Car> GetAllByBrandId(int id)
+        public IDataResult<List<Car>> GetAllByBrandId(int id)
         {
-            return _CarDal.GetAll(p => p.BrandId == id);
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.BrandId == id));
         }
 
-        public List<Car> GetAllByColorId(int id)
+        public IDataResult<List<Car>> GetAllByColorId(int id)
         {
-            return _CarDal.GetAll(p => p.ColorId == id);
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ColorId == id));
         }
 
-        public List<CarDetailsDto> GetCarDetails()
+        public IDataResult<List<CarDetailsDto>> GetCarDetails()
         {
-            return _CarDal.GetCarDetails();
+            if (DateTime.Now.Hour == 14)
+            {
+                return new ErrorDataResult<List<CarDetailsDto>>(Messages.MaintenanceTime);
+            }
+            return  new SuccessDataResult<List<CarDetailsDto>>(_carDal.GetCarDetails());
         }
 
         
